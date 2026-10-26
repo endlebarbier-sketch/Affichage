@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -15,11 +15,6 @@
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --bg: #eef2f8; --card: rgba(255,255,255,.85); --text: #14203a; --muted: #5b6b86; --accent: #0a7bc4; --warm: #c9740a;
-    }
   }
   :root[data-theme="dark"] {
     --bg: #0e1420; --card: rgba(24,33,51,.82); --text: #f2f5fa; --muted: #8fa0ba; --accent: #5cc8ff; --warm: #ffb454;
@@ -41,7 +36,7 @@
   .card { background: var(--card); border-radius: 2vh; padding: 3vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
   .label { font-size: 1.9vh; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.4vh; }
   .time { grid-area: time; justify-content: center; }
-  .clock { font-size: 20vh; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .clock { font-size: 26vh; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
   .clock small { font-size: 7vh; color: var(--accent); margin-left: .6vw; font-weight: 500; }
   .date { font-size: 5vh; margin-top: 2vh; text-transform: capitalize; }
   .week { font-size: 2.6vh; color: var(--muted); margin-top: .8vh; }
@@ -76,7 +71,7 @@
 <body>
 <div class="grid">
   <section class="card time">
-    <div class="clock"><span id="hm">--:--</span><small id="sec">--</small></div>
+    <div class="clock"><span id="hm">--:--</span></div>
     <div class="date" id="date"></div>
     <div class="week" id="week"></div>
   </section>
@@ -234,7 +229,6 @@
   function tick() {
     var now = new Date();
     document.getElementById("hm").textContent = pad(now.getHours()) + ":" + pad(now.getMinutes());
-    document.getElementById("sec").textContent = pad(now.getSeconds());
     var dk = key(now);
     if (dk !== lastDay) {
       lastDay = dk;
@@ -244,10 +238,10 @@
     }
   }
   tick();
-  setInterval(tick, 1000);
+  setInterval(tick, 5000);
 
   // Texte fixe de l’espace libre : écrire entre les guillemets (\n pour un retour à la ligne). Laisser vide pour pouvoir taper au clavier.
-  var TEXTE_LIBRE = "";
+  var TEXTE_LIBRE = "⚠️ Rappel : le port des EPI est obligatoire sur le chantier\n\n⛑️ Casque | 🥾 Chaussures de sécurité | 🧤 Gants | 🦺 Gilet haute visibilité\nMerci de les porter en permanence.";
   ["libre"].forEach(function (id) {
     var el = document.getElementById(id), k = "tv-" + id;
     try { var v = localStorage.getItem(k); if (v) el.textContent = v; } catch (e) {}
