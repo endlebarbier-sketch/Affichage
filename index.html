@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Affichage TV</title>
+<style>
+  :root {
+    --bg: #0e1420;
+    --card: rgba(24,33,51,.82);
+    --text: #f2f5fa;
+    --muted: #8fa0ba;
+    --accent: #5cc8ff;
+    --warm: #ffb454;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #eef2f8; --card: rgba(255,255,255,.85); --text: #14203a; --muted: #5b6b86; --accent: #0a7bc4; --warm: #c9740a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1420; --card: rgba(24,33,51,.82); --text: #f2f5fa; --muted: #8fa0ba; --accent: #5cc8ff; --warm: #ffb454;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg) url("fond.jpg") center / cover no-repeat fixed; color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+  }
+  .grid {
+    box-sizing: border-box; height: 100%; padding: 2.2vh 2vw;
+    display: grid; gap: 2vh 1.4vw;
+    grid-template-columns: 1.35fr 1fr;
+    grid-template-rows: 1.5fr 1fr;
+    grid-template-areas: "time fetes" "libre meteo";
+  }
+  .card { background: var(--card); border-radius: 2vh; padding: 3vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .label { font-size: 1.9vh; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.4vh; }
+  .time { grid-area: time; justify-content: center; }
+  .clock { font-size: 20vh; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .clock small { font-size: 7vh; color: var(--accent); margin-left: .6vw; font-weight: 500; }
+  .date { font-size: 5vh; margin-top: 2vh; text-transform: capitalize; }
+  .week { font-size: 2.6vh; color: var(--muted); margin-top: .8vh; }
+  .fetes { grid-area: fetes; }
+  .today-fete { font-size: 3.6vh; font-weight: 600; color: var(--warm); margin-bottom: 1.6vh; }
+  .row { display: flex; justify-content: space-between; gap: 1vw; font-size: 2.8vh; padding: 1vh 0; border-top: 1px solid rgba(143,160,186,.22); }
+  .row:first-of-type { border-top: 0; }
+  .row .when { color: var(--muted); white-space: nowrap; }
+  .tag { font-size: 1.8vh; color: var(--accent); margin-left: .6vw; }
+  .saint { font-size: 3vh; margin-bottom: 1.4vh; }
+  .saint b { color: var(--accent); font-weight: 600; }
+  .saint span { color: var(--muted); font-size: 2.4vh; margin-left: 1vw; }
+  .big { background: rgba(92,200,255,.10); border-left: .7vh solid var(--accent); border-radius: 1.2vh; padding: 1.1vh 1.2vw; margin-bottom: 1.2vh; }
+  .big .bn { font-size: 4vh; font-weight: 700; }
+  .big .bm { font-size: 2.3vh; color: var(--muted); margin-top: .3vh; }
+  .wnow { font-size: 7vh; font-weight: 700; line-height: 1.05; }
+  .wsub { font-size: 2.4vh; color: var(--muted); margin: .6vh 0 1vh; }
+  .libre { grid-area: libre; }
+  .meteo { grid-area: meteo; }
+  .editable { flex: 1; font-size: 3.4vh; line-height: 1.35; outline: none; white-space: pre-wrap; overflow: auto; }
+  .editable:empty::before { content: attr(data-ph); color: var(--muted); }
+  .editable:focus { outline: 2px dashed var(--accent); outline-offset: .6vh; }
+  @media (max-aspect-ratio: 1/1) {
+    body { overflow: auto; }
+    .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "libre" "meteo"; }
+    .clock { font-size: 18vw; } .clock small { font-size: 6vw; } .date { font-size: 6vw; }
+    .label { font-size: 3vw; } .row { font-size: 4.2vw; } .editable { font-size: 5vw; min-height: 20vh; }
+    .today-fete { font-size: 5vw; } .week { font-size: 3.6vw; }
+  }
+</style>
+</head>
+<body>
+<div class="grid">
+  <section class="card time">
+    <div class="clock"><span id="hm">--:--</span><small id="sec">--</small></div>
+    <div class="date" id="date"></div>
+    <div class="week" id="week"></div>
+  </section>
+
+  <section class="card fetes">
+    <div class="label">Fêtes et jours fériés</div>
+    <div class="saint" id="saint"></div>
+    <div class="today-fete" id="todayFete"></div>
+    <div id="upcoming"></div>
+  </section>
+
+  <section class="card libre">
+    <div class="label">Espace libre</div>
+    <div class="editable" id="libre" contenteditable="true" spellcheck="false" data-ph="Cliquer pour écrire un message, une consigne, un menu…"></div>
+  </section>
+
+  <section class="card meteo">
+    <div class="label">Météo · Dinan</div>
+    <div class="wnow" id="wnow">Chargement…</div>
+    <div class="wsub" id="wsub"></div>
+    <div id="wdays"></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function sod(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function key(d) { return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
+
+  function easter(y) {
+    var a = y % 19, b = Math.floor(y / 100), c = y % 100;
+    var d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+    var g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    var i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+    var m = Math.floor((a + 11 * h + 22 * l) / 451);
+    var mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(y, mo - 1, da);
+  }
+  function nthSunday(y, month, n) {
+    var d = new Date(y, month, 1);
+    while (d.getDay() !== 0) d = addDays(d, 1);
+    return addDays(d, 7 * (n - 1));
+  }
+  function lastSunday(y, month) {
+    var d = new Date(y, month + 1, 0);
+    while (d.getDay() !== 0) d = addDays(d, -1);
+    return d;
+  }
+
+  function events(y) {
+    var p = easter(y), list = [];
+    function f(d, n) { list.push({ d: d, n: n, ferie: true }); }
+    function s(d, n) { list.push({ d: d, n: n, ferie: false }); }
+    f(new Date(y, 0, 1), "Jour de l’An");
+    f(addDays(p, 1), "Lundi de Pâques");
+    f(new Date(y, 4, 1), "Fête du Travail");
+    f(new Date(y, 4, 8), "Victoire 1945");
+    f(addDays(p, 39), "Ascension");
+    f(addDays(p, 50), "Lundi de Pentecôte");
+    f(new Date(y, 6, 14), "Fête nationale");
+    f(new Date(y, 7, 15), "Assomption");
+    f(new Date(y, 10, 1), "Toussaint");
+    f(new Date(y, 10, 11), "Armistice 1918");
+    f(new Date(y, 11, 25), "Noël");
+    s(new Date(y, 1, 2), "Chandeleur");
+    s(new Date(y, 1, 14), "Saint-Valentin");
+    s(addDays(p, -47), "Mardi gras");
+    s(p, "Pâques");
+    s(new Date(y, 3, 1), "Poisson d’avril");
+    s(lastSunday(y, 2), "Passage à l’heure d’été");
+    var pent = addDays(p, 49), mere = lastSunday(y, 4);
+    if (key(mere) === key(pent)) mere = nthSunday(y, 5, 1);
+    s(mere, "Fête des mères");
+    s(nthSunday(y, 5, 3), "Fête des pères");
+    s(new Date(y, 5, 21), "Fête de la musique");
+    s(lastSunday(y, 9), "Passage à l’heure d’hiver");
+    s(new Date(y, 9, 31), "Halloween");
+    s(new Date(y, 11, 6), "Saint-Nicolas");
+    s(new Date(y, 11, 24), "Réveillon de Noël");
+    s(new Date(y, 11, 31), "Saint-Sylvestre");
+    return list;
+  }
+
+  function weekNumber(d) {
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    var y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return Math.ceil(((t - y0) / 86400000 + 1) / 7);
+  }
+
+  var SAINTS = [
+    "Basile|Basile|Geneviève|Odilon|Édouard|Mélaine|Raymond|Lucien|Alix|Guillaume|Paulin|Tatiana|Yvette|Nina|Rémi|Marcel|Roseline|Prisca|Marius|Sébastien|Agnès|Vincent|Barnard|François de Sales|Paul|Paule|Angèle|Thomas d’Aquin|Gildas|Martine|Marcelle",
+    "Ella|Théophane|Blaise|Véronique|Agathe|Gaston|Eugénie|Jacqueline|Apolline|Arnaud|Notre-Dame de Lourdes|Félix|Béatrice|Valentin|Claude|Julienne|Alexis|Bernadette|Gabin|Aimée|Pierre Damien|Isabelle|Lazare|Modeste|Roméo|Nestor|Honorine|Romain|Auguste",
+    "Aubin|Charles le Bon|Guénolé|Casimir|Olive|Colette|Félicité|Jean de Dieu|Françoise|Vivien|Rosine|Justine|Rodrigue|Mathilde|Louise|Bénédicte|Patrick|Cyrille|Joseph|Herbert|Clémence|Léa|Victorien|Karine|Humbert|Larissa|Habib|Gontran|Gwladys|Amédée|Benjamin",
+    "Hugues|Sandrine|Richard|Isidore|Irène|Marcellin|Jean-Baptiste de la Salle|Julie|Gautier|Fulbert|Stanislas|Jules|Ida|Maxime|Paterne|Benoît-Joseph|Anicet|Parfait|Emma|Odette|Anselme|Alexandre|Georges|Fidèle|Marc|Alida|Zita|Valérie|Catherine de Sienne|Robert",
+    "Joseph|Boris|Philippe et Jacques|Sylvain|Judith|Prudence|Gisèle|Désiré|Pacôme|Solange|Estelle|Achille|Rolande|Matthias|Denise|Honoré|Pascal|Éric|Yves|Bernardin|Constantin|Émile|Didier|Donatien|Sophie|Bérenger|Augustin|Germain|Aymar|Ferdinand|Perrine",
+    "Justin|Blandine|Kévin|Clotilde|Igor|Norbert|Gilbert|Médard|Diane|Landry|Barnabé|Guy|Antoine de Padoue|Élisée|Germaine|Jean-François Régis|Hervé|Léonce|Romuald|Silvère|Rodolphe|Alban|Audrey|Jean-Baptiste|Prosper|Anthelme|Fernand|Irénée|Pierre et Paul|Martial",
+    "Thierry|Martinien|Thomas|Florent|Antoine|Mariette|Raoul|Thibaut|Amandine|Ulrich|Benoît|Olivier|Henri et Joël|Camille|Donald|Notre-Dame du Mont-Carmel|Charlotte|Frédéric|Arsène|Marina|Victor|Marie-Madeleine|Brigitte|Christine|Jacques|Anne et Joachim|Nathalie|Samson|Marthe|Juliette|Ignace de Loyola",
+    "Alphonse|Julien Eymard|Lydie|Jean-Marie Vianney|Abel|Transfiguration|Gaétan|Dominique|Amour|Laurent|Claire|Clarisse|Hippolyte|Evrard|Marie|Armel|Hyacinthe|Hélène|Jean Eudes|Bernard|Christophe|Fabrice|Rose de Lima|Barthélemy|Louis|Natacha|Monique|Augustin|Sabine|Fiacre|Aristide",
+    "Gilles|Ingrid|Grégoire|Rosalie|Raïssa|Bertrand|Reine|Adrien|Alain|Inès|Adelphe|Apollinaire|Aimé|Materne|Roland|Édith|Renaud|Nadège|Émilie|Davy|Matthieu|Maurice|Constant|Thècle|Hermann|Côme et Damien|Vincent de Paul|Venceslas|Michel|Jérôme",
+    "Thérèse|Léger|Gérard|François d’Assise|Fleur|Bruno|Serge|Pélagie|Denis|Ghislain|Firmin|Wilfried|Géraud|Juste|Thérèse d’Avila|Edwige|Baudouin|Luc|René|Adeline|Céline|Élodie|Jean de Capistran|Florentin|Crépin|Dimitri|Émeline|Simon|Narcisse|Bienvenue|Quentin",
+    "Toussaint|Défunts|Hubert|Charles|Sylvie|Bertille|Carine|Geoffroy|Théodore|Léon|Martin|Christian|Brice|Sidoine|Albert|Marguerite|Élisabeth|Aude|Tanguy|Edmond|Rufus|Cécile|Clément|Flora|Catherine|Delphine|Séverin|Jacques de la Marche|Saturnin|André",
+    "Florence|Viviane|François-Xavier|Barbara|Gérald|Nicolas|Ambroise|Immaculée Conception|Pierre Fourier|Romaric|Daniel|Jeanne de Chantal|Lucie|Odile|Ninon|Alice|Gaël|Gatien|Urbain|Théophile|Pierre Canisius|Françoise-Xavière|Armand|Adèle|Noël|Étienne|Jean|Innocents|David|Roger|Sylvestre"
+  ].map(function (m) { return m.split("|"); });
+  function saintOf(d) { return SAINTS[d.getMonth()][d.getDate() - 1] || ""; }
+  function renderSaint(now) {
+    var el = document.getElementById("saint");
+    el.textContent = "";
+    var lead = document.createTextNode("Saint du jour : ");
+    var b = document.createElement("b"); b.textContent = saintOf(now);
+    var sp = document.createElement("span"); sp.textContent = "demain : " + saintOf(addDays(sod(now), 1));
+    el.appendChild(lead); el.appendChild(b); el.appendChild(sp);
+  }
+
+  function renderFetes(now) {
+    var today = sod(now), y = now.getFullYear();
+    var all = events(y).concat(events(y + 1));
+    all.sort(function (a, b) { return a.d - b.d; });
+    var tk = key(today), todayNames = [], up = [];
+    all.forEach(function (e) {
+      if (key(e.d) === tk) todayNames.push(e.n);
+      else if (e.d > today && up.length < 4) up.push(e);
+    });
+    document.getElementById("todayFete").textContent = todayNames.length ? "Aujourd’hui : " + todayNames.join(" · ") : "";
+    renderSaint(now);
+    var box = document.getElementById("upcoming");
+    box.textContent = "";
+    up.forEach(function (e, i) {
+      var diff = Math.round((e.d - today) / 86400000);
+      if (i < 2) {
+        var big = document.createElement("div"); big.className = "big";
+        var bn = document.createElement("div"); bn.className = "bn"; bn.textContent = e.n;
+        var bm = document.createElement("div"); bm.className = "bm";
+        bm.textContent = (diff === 1 ? "demain" : "dans " + diff + " jours") + " · " + JOURS[e.d.getDay()] + " " + e.d.getDate() + " " + MOIS[e.d.getMonth()];
+        big.appendChild(bn); big.appendChild(bm); box.appendChild(big);
+        return;
+      }
+      var row = document.createElement("div"); row.className = "row";
+      var left = document.createElement("span"); left.textContent = e.n;
+      if (e.ferie) { var t = document.createElement("span"); t.className = "tag"; t.textContent = "férié"; left.appendChild(t); }
+      var right = document.createElement("span"); right.className = "when";
+      var lbl = diff === 1 ? "demain" : "dans " + diff + " j";
+      right.textContent = JOURS[e.d.getDay()].slice(0, 3) + ". " + e.d.getDate() + " " + MOIS[e.d.getMonth()].slice(0, 4) + (MOIS[e.d.getMonth()].length > 4 ? "." : "") + " · " + lbl;
+      row.appendChild(left); row.appendChild(right); box.appendChild(row);
+    });
+  }
+
+  var lastDay = "";
+  function tick() {
+    var now = new Date();
+    document.getElementById("hm").textContent = pad(now.getHours()) + ":" + pad(now.getMinutes());
+    document.getElementById("sec").textContent = pad(now.getSeconds());
+    var dk = key(now);
+    if (dk !== lastDay) {
+      lastDay = dk;
+      document.getElementById("date").textContent = JOURS[now.getDay()] + " " + now.getDate() + " " + MOIS[now.getMonth()] + " " + now.getFullYear();
+      document.getElementById("week").textContent = "Semaine " + weekNumber(now);
+      renderFetes(now);
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Texte fixe de l’espace libre : écrire entre les guillemets (\n pour un retour à la ligne). Laisser vide pour pouvoir taper au clavier.
+  var TEXTE_LIBRE = "";
+  ["libre"].forEach(function (id) {
+    var el = document.getElementById(id), k = "tv-" + id;
+    try { var v = localStorage.getItem(k); if (v) el.textContent = v; } catch (e) {}
+    if (TEXTE_LIBRE) { el.textContent = TEXTE_LIBRE; el.contentEditable = "false"; }
+    el.addEventListener("input", function () {
+      try { localStorage.setItem(k, el.textContent); } catch (e) {}
+    });
+  });
+
+  var WMO = {0:["Ciel dégagé","☀️"],1:["Plutôt dégagé","🌤️"],2:["Éclaircies","⛅"],3:["Couvert","☁️"],45:["Brouillard","🌫️"],48:["Brouillard givrant","🌫️"],
+    51:["Bruine légère","🌦️"],53:["Bruine","🌦️"],55:["Bruine dense","🌦️"],56:["Bruine verglaçante","🌧️"],57:["Bruine verglaçante","🌧️"],
+    61:["Pluie faible","🌧️"],63:["Pluie","🌧️"],65:["Pluie forte","🌧️"],66:["Pluie verglaçante","🌧️"],67:["Pluie verglaçante","🌧️"],
+    71:["Neige faible","🌨️"],73:["Neige","🌨️"],75:["Neige forte","❄️"],77:["Grains de neige","🌨️"],
+    80:["Averses","🌦️"],81:["Averses","🌦️"],82:["Averses violentes","⛈️"],85:["Averses de neige","🌨️"],86:["Averses de neige","🌨️"],
+    95:["Orage","⛈️"],96:["Orage et grêle","⛈️"],99:["Orage et grêle","⛈️"]};
+  function wmo(c) { return WMO[c] || ["—", ""]; }
+  var URL_METEO = "https://api.open-meteo.com/v1/forecast?latitude=48.455&longitude=-2.05" +
+    "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m" +
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+    "&timezone=Europe%2FParis&forecast_days=4";
+  function loadMeteo() {
+    fetch(URL_METEO).then(function (r) { return r.json(); }).then(function (j) {
+      var c = j.current, w = wmo(c.weather_code);
+      document.getElementById("wnow").textContent = w[1] + " " + Math.round(c.temperature_2m) + "°C";
+      document.getElementById("wsub").textContent = w[0] + " · ressenti " + Math.round(c.apparent_temperature) + "° · vent " + Math.round(c.wind_speed_10m) + " km/h";
+      var box = document.getElementById("wdays"); box.textContent = "";
+      for (var i = 1; i < j.daily.time.length; i++) {
+        var d = new Date(j.daily.time[i] + "T12:00:00"), x = wmo(j.daily.weather_code[i]);
+        var row = document.createElement("div"); row.className = "row";
+        var l = document.createElement("span"); l.textContent = JOURS[d.getDay()].slice(0, 3) + ". " + d.getDate() + "  " + x[1] + " " + x[0];
+        var r = document.createElement("span"); r.className = "when";
+        r.textContent = Math.round(j.daily.temperature_2m_min[i]) + "° / " + Math.round(j.daily.temperature_2m_max[i]) + "° · 💧" + j.daily.precipitation_probability_max[i] + "%";
+        row.appendChild(l); row.appendChild(r); box.appendChild(row);
+      }
+    }).catch(function () {
+      document.getElementById("wnow").textContent = "Météo indisponible";
+      document.getElementById("wsub").textContent = "Vérifier la connexion internet de la télé";
+    });
+  }
+  loadMeteo();
+  setInterval(loadMeteo, 15 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
