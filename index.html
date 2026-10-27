@@ -241,7 +241,7 @@
   setInterval(tick, 5000);
 
   // Texte fixe de l’espace libre : écrire entre les guillemets (\n pour un retour à la ligne). Laisser vide pour pouvoir taper au clavier.
-  var TEXTE_LIBRE = "⚠️ Rappel : le port des EPI est obligatoire sur le chantier\n\n⛑️ Casque | 🥾 Chaussures de sécurité | 🧤 Gants | 🦺 Gilet haute visibilité\nMerci de les porter en permanence.";
+  var TEXTE_LIBRE = "⚠️ Rappel : le port des EPI est obligatoire sur le chantier\n\n⛑️ Casque | 🥾 Chaussures de sécurité | 🧤 Gants \nMerci de les porter en permanence.";
   ["libre"].forEach(function (id) {
     var el = document.getElementById(id), k = "tv-" + id;
     try { var v = localStorage.getItem(k); if (v) el.textContent = v; } catch (e) {}
