@@ -54,7 +54,11 @@
   .big .bm { font-size: 2.3vh; color: var(--muted); margin-top: .3vh; }
   .wnow { font-size: 7vh; font-weight: 700; line-height: 1.05; }
   .wsub { font-size: 2.4vh; color: var(--muted); margin: .6vh 0 1vh; }
-  .libre { grid-area: libre; }
+  .libre { grid-area: libre; background: #6b0f2a; box-shadow: inset 0 0 0 .4vh rgba(255,255,255,.18); }
+  .libre .label { color: rgba(255,255,255,.75); }
+  .libre-body { flex: 1; display: flex; align-items: center; gap: 2vw; min-height: 0; }
+  .libre-body .editable { color: #ffffff; font-weight: 600; }
+  .sign { flex: 0 0 auto; height: 20vh; width: auto; }
   .meteo { grid-area: meteo; }
   .editable { flex: 1; font-size: 3.4vh; line-height: 1.35; outline: none; white-space: pre-wrap; overflow: auto; }
   .editable:empty::before { content: attr(data-ph); color: var(--muted); }
@@ -64,7 +68,7 @@
     .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "libre" "meteo"; }
     .clock { font-size: 18vw; } .clock small { font-size: 6vw; } .date { font-size: 6vw; }
     .label { font-size: 3vw; } .row { font-size: 4.2vw; } .editable { font-size: 5vw; min-height: 20vh; }
-    .today-fete { font-size: 5vw; } .week { font-size: 3.6vw; }
+    .today-fete { font-size: 5vw; } .sign { height: 14vw; } .week { font-size: 3.6vw; }
   }
 </style>
 </head>
@@ -84,8 +88,15 @@
   </section>
 
   <section class="card libre">
-    <div class="label">Espace libre</div>
-    <div class="editable" id="libre" contenteditable="true" spellcheck="false" data-ph="Cliquer pour écrire un message, une consigne, un menu…"></div>
+    <div class="label">Information</div>
+    <div class="libre-body">
+      <div class="editable" id="libre" contenteditable="true" spellcheck="false" data-ph="Cliquer pour écrire un message, une consigne, un menu…"></div>
+      <svg class="sign" viewBox="0 0 100 90" role="img" aria-label="Attention">
+        <polygon points="50,6 96,86 4,86" fill="#ffc400" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>
+        <rect x="45" y="32" width="10" height="32" rx="4" fill="#111111"/>
+        <circle cx="50" cy="73" r="6" fill="#111111"/>
+      </svg>
+    </div>
   </section>
 
   <section class="card meteo">
