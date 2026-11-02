@@ -30,7 +30,7 @@
     box-sizing: border-box; height: 100%; padding: 2.2vh 2vw;
     display: grid; gap: 2vh 1.4vw;
     grid-template-columns: 1.35fr 1fr;
-    grid-template-rows: 1.5fr 1fr;
+    grid-template-rows: 1.2fr 1fr;
     grid-template-areas: "time fetes" "libre meteo";
   }
   .card { background: var(--card); border-radius: 2vh; padding: 3vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
@@ -57,8 +57,8 @@
   .libre { grid-area: libre; background: #6b0f2a; box-shadow: inset 0 0 0 .4vh rgba(255,255,255,.18); }
   .libre .label { color: rgba(255,255,255,.75); }
   .libre-body { flex: 1; display: flex; align-items: center; gap: 2vw; min-height: 0; }
-  .libre-body .editable { color: #ffffff; font-weight: 600; }
-  .sign { flex: 0 0 auto; height: 20vh; width: auto; }
+  .libre-body .editable { color: #ffffff; font-weight: 600; align-self: stretch; font-size: 3.2vh; line-height: 1.3; }
+  .sign { flex: 0 0 auto; height: 16vh; width: auto; }
   .meteo { grid-area: meteo; }
   .editable { flex: 1; font-size: 3.4vh; line-height: 1.35; outline: none; white-space: pre-wrap; overflow: auto; }
   .editable:empty::before { content: attr(data-ph); color: var(--muted); }
@@ -91,11 +91,6 @@
     <div class="label">Information</div>
     <div class="libre-body">
       <div class="editable" id="libre" contenteditable="true" spellcheck="false" data-ph="Cliquer pour écrire un message, une consigne, un menu…"></div>
-      <svg class="sign" viewBox="0 0 100 90" role="img" aria-label="Attention">
-        <polygon points="50,6 96,86 4,86" fill="#ffc400" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>
-        <rect x="45" y="32" width="10" height="32" rx="4" fill="#111111"/>
-        <circle cx="50" cy="73" r="6" fill="#111111"/>
-      </svg>
     </div>
   </section>
 
@@ -251,22 +246,21 @@
   tick();
   setInterval(tick, 5000);
 
+  function fitText(el) {
+    el.style.fontSize = "";
+    var px = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollHeight > el.clientHeight + 1 && px > 12) { px -= 1; el.style.fontSize = px + "px"; }
+  }
   // Texte fixe de l’espace libre : écrire entre les guillemets (\n pour un retour à la ligne). Laisser vide pour pouvoir taper au clavier.
-  var TEXTE_LIBRE = "⚠️ EPI OBLIGATOIRES ⚠️
-
-Sur le chantier, on les porte en permanence 👷
-
-⛑️ Casque
-🥾 Chaussures de sécurité
-🧤 Gants
-🎧 Protections auditives
-🥽 Lunettes de protection
-
-🤝 Tout le monde rentre chez soi en bonne santé !";
+  var TEXTE_LIBRE = "⚠️ EPI OBLIGATOIRES ⚠️\n\nSur le chantier, on les porte en permanence 👷\n\n⛑️ Casque\n🥾 Chaussures de sécurité\n🧤 Gants\n🎧 Protections auditives\n🥽 Lunettes de protection";
   ["libre"].forEach(function (id) {
     var el = document.getElementById(id), k = "tv-" + id;
     try { var v = localStorage.getItem(k); if (v) el.textContent = v; } catch (e) {}
     if (TEXTE_LIBRE) { el.textContent = TEXTE_LIBRE; el.contentEditable = "false"; }
+    fitText(el);
+    window.addEventListener("resize", function () { fitText(el); });
+    window.addEventListener("load", function () { fitText(el); });
+    el.addEventListener("input", function () { fitText(el); });
     el.addEventListener("input", function () {
       try { localStorage.setItem(k, el.textContent); } catch (e) {}
     });
