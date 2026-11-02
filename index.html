@@ -59,7 +59,7 @@
   .rk { background: #f7e86a; color: #111; border-radius: 1.6vh; padding: .6vh 1.2vw; text-align: center; line-height: 1.05; flex: 0 0 auto; }
   .rk-n { font-size: 5vh; font-weight: 800; font-style: italic; }
   .rk-c { font-size: 1.5vh; font-weight: 700; text-transform: uppercase; }
-  .rn { flex: 1.1; min-width: 0; }
+  .rn { flex: 1.8; min-width: 0; }
   .rn-l { font-size: 1.7vh; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .rn-n { font-size: 3.6vh; font-weight: 800; font-style: italic; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .st { background: rgba(143,160,186,.14); border-radius: 1.4vh; padding: .7vh 1vw; flex: 1; min-width: 0; }
@@ -399,8 +399,13 @@
     set("s3", b.ecartTexte); set("s3l", b.ecartLabel);
     set("routeTxt", b.route + " % de la route" + (b.live && b.pointage ? " · pointage de " + b.pointage : " · valeurs non actualisées"));
     document.getElementById("fill").style.width = b.route + "%";
+    var n = document.getElementById("rnN");
+    n.style.fontSize = "";
+    var px = parseFloat(getComputedStyle(n).fontSize);
+    while (n.scrollWidth > n.clientWidth + 1 && px > 12) { px -= 1; n.style.fontSize = px + "px"; }
   }
   loadRhum();
+  window.addEventListener("resize", function () { renderRhum(new Date()); });
   setInterval(loadRhum, 30 * 60 * 1000);
 })();
 </script>
