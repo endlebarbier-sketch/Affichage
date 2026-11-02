@@ -30,8 +30,8 @@
     box-sizing: border-box; height: 100%; padding: 2.2vh 2vw;
     display: grid; gap: 2vh 1.4vw;
     grid-template-columns: 1.35fr 1fr;
-    grid-template-rows: 1.25fr 1fr auto;
-    grid-template-areas: "time fetes" "libre meteo" "rhum rhum";
+    grid-template-rows: 1.25fr auto 1fr;
+    grid-template-areas: "time fetes" "rhum rhum" "libre meteo";
   }
   .card { background: var(--card); border-radius: 2vh; padding: 2.4vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
   .label { font-size: 1.9vh; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.4vh; }
@@ -54,20 +54,20 @@
   .big .bm { font-size: 2.1vh; color: var(--muted); margin-top: .3vh; }
   .wnow { font-size: 7vh; font-weight: 700; line-height: 1.05; }
   .wsub { font-size: 2.4vh; color: var(--muted); margin: .6vh 0 1vh; }
-  .rhum { grid-area: rhum; padding: 1.4vh 2vw; gap: 1vh; border-left: .8vh solid var(--accent); }
+  .rhum { grid-area: rhum; padding: 1.4vh 2vw; gap: 1vh; background: #123a63; color: #ffffff; border-left: .8vh solid #f7e86a; }
   .rrow { display: flex; align-items: center; gap: 1.6vw; }
   .rk { background: #f7e86a; color: #111; border-radius: 1.6vh; padding: .6vh 1.2vw; text-align: center; line-height: 1.05; flex: 0 0 auto; }
-  .rk-n { font-size: 5vh; font-weight: 800; font-style: italic; }
+  .rk-n { font-size: 5.4vh; font-weight: 800; font-style: italic; }
   .rk-c { font-size: 1.5vh; font-weight: 700; text-transform: uppercase; }
   .rn { flex: 1.8; min-width: 0; }
-  .rn-l { font-size: 1.7vh; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .rn-n { font-size: 3.6vh; font-weight: 800; font-style: italic; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .st { background: rgba(143,160,186,.14); border-radius: 1.4vh; padding: .7vh 1vw; flex: 1; min-width: 0; }
-  .st b { display: block; font-size: 3.4vh; font-style: italic; font-weight: 800; line-height: 1.15; }
-  .st span { display: block; font-size: 1.7vh; color: var(--muted); line-height: 1.2; }
-  .prog { display: flex; align-items: center; gap: 1vw; font-size: 1.7vh; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-  .track { flex: 1; height: .9vh; background: rgba(143,160,186,.3); border-radius: 1vh; overflow: hidden; }
-  .fill { height: 100%; width: 0; background: var(--accent); border-radius: 1vh; }
+  .rn-l { font-size: 1.8vh; letter-spacing: .12em; text-transform: uppercase; color: #bcd6f2; }
+  .rn-n { font-size: 3.8vh; font-weight: 800; font-style: italic; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .st { background: rgba(255,255,255,.12); border-radius: 1.4vh; padding: .7vh 1vw; flex: 1; min-width: 0; }
+  .st b { display: block; font-size: 3.7vh; font-style: italic; font-weight: 800; line-height: 1.15; }
+  .st span { display: block; font-size: 1.8vh; color: #c9dcf3; line-height: 1.2; }
+  .prog { display: flex; align-items: center; gap: 1vw; font-size: 1.8vh; color: #c9dcf3; text-transform: uppercase; letter-spacing: .08em; }
+  .track { flex: 1; height: .9vh; background: rgba(255,255,255,.25); border-radius: 1vh; overflow: hidden; }
+  .fill { height: 100%; width: 0; background: #f7e86a; border-radius: 1vh; }
   .libre { grid-area: libre; background: #6b0f2a; box-shadow: inset 0 0 0 .4vh rgba(255,255,255,.18); }
   .libre .label { color: rgba(255,255,255,.75); }
   .libre-body { flex: 1; display: flex; align-items: center; gap: 2vw; min-height: 0; }
@@ -79,7 +79,7 @@
   .editable:focus { outline: 2px dashed var(--accent); outline-offset: .6vh; }
   @media (max-aspect-ratio: 1/1) {
     body { overflow: auto; }
-    .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "libre" "meteo" "rhum"; }
+    .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "rhum" "libre" "meteo"; }
     .clock { font-size: 18vw; } .clock small { font-size: 6vw; } .date { font-size: 6vw; }
     .label { font-size: 3vw; } .row { font-size: 4.2vw; } .editable { font-size: 5vw; min-height: 20vh; }
     .today-fete { font-size: 5vw; } .rrow { flex-wrap: wrap; } .sign { height: 14vw; } .week { font-size: 3.6vw; }
