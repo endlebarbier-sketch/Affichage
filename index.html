@@ -30,13 +30,13 @@
     box-sizing: border-box; height: 100%; padding: 2.2vh 2vw;
     display: grid; gap: 2vh 1.4vw;
     grid-template-columns: 1.35fr 1fr;
-    grid-template-rows: 1.2fr 1fr;
-    grid-template-areas: "time fetes" "libre meteo";
+    grid-template-rows: 1.25fr 1fr auto;
+    grid-template-areas: "time fetes" "libre meteo" "rhum rhum";
   }
-  .card { background: var(--card); border-radius: 2vh; padding: 3vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .card { background: var(--card); border-radius: 2vh; padding: 2.4vh 2.2vw; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
   .label { font-size: 1.9vh; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.4vh; }
   .time { grid-area: time; justify-content: center; }
-  .clock { font-size: 26vh; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .clock { font-size: 23vh; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
   .clock small { font-size: 7vh; color: var(--accent); margin-left: .6vw; font-weight: 500; }
   .date { font-size: 5vh; margin-top: 2vh; text-transform: capitalize; }
   .week { font-size: 2.6vh; color: var(--muted); margin-top: .8vh; }
@@ -49,11 +49,25 @@
   .saint { font-size: 3vh; margin-bottom: 1.4vh; }
   .saint b { color: var(--accent); font-weight: 600; }
   .saint span { color: var(--muted); font-size: 2.4vh; margin-left: 1vw; }
-  .big { background: rgba(92,200,255,.10); border-left: .7vh solid var(--accent); border-radius: 1.2vh; padding: 1.1vh 1.2vw; margin-bottom: 1.2vh; }
-  .big .bn { font-size: 4vh; font-weight: 700; }
-  .big .bm { font-size: 2.3vh; color: var(--muted); margin-top: .3vh; }
+  .big { background: rgba(92,200,255,.10); border-left: .7vh solid var(--accent); border-radius: 1.2vh; padding: .9vh 1.2vw; margin-bottom: 1vh; }
+  .big .bn { font-size: 3.6vh; font-weight: 700; }
+  .big .bm { font-size: 2.1vh; color: var(--muted); margin-top: .3vh; }
   .wnow { font-size: 7vh; font-weight: 700; line-height: 1.05; }
   .wsub { font-size: 2.4vh; color: var(--muted); margin: .6vh 0 1vh; }
+  .rhum { grid-area: rhum; padding: 1.4vh 2vw; gap: 1vh; border-left: .8vh solid var(--accent); }
+  .rrow { display: flex; align-items: center; gap: 1.6vw; }
+  .rk { background: #f7e86a; color: #111; border-radius: 1.6vh; padding: .6vh 1.2vw; text-align: center; line-height: 1.05; flex: 0 0 auto; }
+  .rk-n { font-size: 5vh; font-weight: 800; font-style: italic; }
+  .rk-c { font-size: 1.5vh; font-weight: 700; text-transform: uppercase; }
+  .rn { flex: 1.1; min-width: 0; }
+  .rn-l { font-size: 1.7vh; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .rn-n { font-size: 3.6vh; font-weight: 800; font-style: italic; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .st { background: rgba(143,160,186,.14); border-radius: 1.4vh; padding: .7vh 1vw; flex: 1; min-width: 0; }
+  .st b { display: block; font-size: 3.4vh; font-style: italic; font-weight: 800; line-height: 1.15; }
+  .st span { display: block; font-size: 1.7vh; color: var(--muted); line-height: 1.2; }
+  .prog { display: flex; align-items: center; gap: 1vw; font-size: 1.7vh; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .track { flex: 1; height: .9vh; background: rgba(143,160,186,.3); border-radius: 1vh; overflow: hidden; }
+  .fill { height: 100%; width: 0; background: var(--accent); border-radius: 1vh; }
   .libre { grid-area: libre; background: #6b0f2a; box-shadow: inset 0 0 0 .4vh rgba(255,255,255,.18); }
   .libre .label { color: rgba(255,255,255,.75); }
   .libre-body { flex: 1; display: flex; align-items: center; gap: 2vw; min-height: 0; }
@@ -65,10 +79,10 @@
   .editable:focus { outline: 2px dashed var(--accent); outline-offset: .6vh; }
   @media (max-aspect-ratio: 1/1) {
     body { overflow: auto; }
-    .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "libre" "meteo"; }
+    .grid { height: auto; grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "time" "fetes" "libre" "meteo" "rhum"; }
     .clock { font-size: 18vw; } .clock small { font-size: 6vw; } .date { font-size: 6vw; }
     .label { font-size: 3vw; } .row { font-size: 4.2vw; } .editable { font-size: 5vw; min-height: 20vh; }
-    .today-fete { font-size: 5vw; } .sign { height: 14vw; } .week { font-size: 3.6vw; }
+    .today-fete { font-size: 5vw; } .rrow { flex-wrap: wrap; } .sign { height: 14vw; } .week { font-size: 3.6vw; }
   }
 </style>
 </head>
@@ -99,6 +113,17 @@
     <div class="wnow" id="wnow">Chargement…</div>
     <div class="wsub" id="wsub"></div>
     <div id="wdays"></div>
+  </section>
+
+  <section class="card rhum">
+    <div class="rrow">
+      <div class="rk"><div class="rk-n" id="rkN">–</div><div class="rk-c" id="rkC"></div></div>
+      <div class="rn"><div class="rn-l" id="rnL">⛵ Route du Rhum</div><div class="rn-n" id="rnN"></div></div>
+      <div class="st"><b id="s1"></b><span id="s1l"></span></div>
+      <div class="st"><b id="s2"></b><span id="s2l"></span></div>
+      <div class="st"><b id="s3"></b><span id="s3l"></span></div>
+    </div>
+    <div class="prog"><span>Saint-Malo</span><div class="track"><div class="fill" id="fill"></div></div><span id="routeTxt"></span><span>Pointe-à-Pitre</span></div>
   </section>
 </div>
 
@@ -235,12 +260,14 @@
   function tick() {
     var now = new Date();
     document.getElementById("hm").textContent = pad(now.getHours()) + ":" + pad(now.getMinutes());
+    if (BATEAU) renderRhum(now);
     var dk = key(now);
     if (dk !== lastDay) {
       lastDay = dk;
       document.getElementById("date").textContent = JOURS[now.getDay()] + " " + now.getDate() + " " + MOIS[now.getMonth()] + " " + now.getFullYear();
       document.getElementById("week").textContent = "Semaine " + weekNumber(now);
       renderFetes(now);
+      trimFetes();
     }
   }
   tick();
@@ -291,6 +318,7 @@
         r.textContent = Math.round(j.daily.temperature_2m_min[i]) + "° / " + Math.round(j.daily.temperature_2m_max[i]) + "° · 💧" + j.daily.precipitation_probability_max[i] + "%";
         row.appendChild(l); row.appendChild(r); box.appendChild(row);
       }
+      trimCard(".meteo", "wdays");
     }).catch(function () {
       document.getElementById("wnow").textContent = "Météo indisponible";
       document.getElementById("wsub").textContent = "Vérifier la connexion internet de la télé";
@@ -298,6 +326,82 @@
   }
   loadMeteo();
   setInterval(loadMeteo, 15 * 60 * 1000);
+
+  function trimFetes() {
+    var card = document.querySelector(".fetes"), rows = document.getElementById("upcoming").querySelectorAll(".row");
+    for (var i = rows.length - 1; i >= 0 && card.scrollHeight > card.clientHeight + 1; i--) rows[i].style.display = "none";
+  }
+  window.addEventListener("load", trimFetes);
+
+  function trimCard(sel, id) {
+    var card = document.querySelector(sel), rows = document.getElementById(id).querySelectorAll(".row");
+    for (var i = rows.length - 1; i >= 0 && card.scrollHeight > card.clientHeight + 1; i--) rows[i].style.display = "none";
+  }
+
+  // Suivi Route du Rhum : lecture automatique du classement officiel (toutes les 30 min).
+  // Les valeurs ci-dessous ne servent que de secours si la lecture échoue.
+  var ID_SKIPPER = "a7a3f014-e29d-491f-bda7-d32bfbd0ef03";
+  var URL_DIRECT = "https://www.routedurhum.com/_functions/classement?lang=fr";
+  var URL_RELAIS = "rhum.json";
+  var BATEAU = {
+    skipper: "Christophe Bachmann", bateau: "Grain de Sable", categorie: "Vintage Mono", classement: "6e",
+    milles: "3 269", km: "6 054", noeuds: "12,6", kmh: "23,3",
+    ecartTexte: "4,0 milles", ecartLabel: "7,4 km pour rattraper T. Pilliard, 5e",
+    route: 8, pointage: "", live: false
+  };
+  function titre(t) { return t.trim().toLowerCase().replace(/(^|[\s-])\S/g, function (m) { return m.toUpperCase(); }); }
+  function fmt(n, d) { return n.toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }); }
+
+  function appliquer(j) {
+    var cl = null, me = null;
+    j.classes.forEach(function (c) { c.lignes.forEach(function (l) { if (l.id === ID_SKIPPER) { cl = c; me = l; } }); });
+    if (!me) throw new Error("skipper introuvable");
+    function rang(r) { return cl.lignes.filter(function (l) { return l.rang === r; })[0]; }
+    var b = BATEAU, KM = 1.852;
+    b.skipper = titre(me.prenom) + " " + titre(me.nom);
+    b.bateau = me.bateau.trim();
+    b.categorie = cl.nom;
+    b.classement = me.rang === 1 ? "1er" : me.rang + "e";
+    b.milles = fmt(me.dtf, 0); b.km = fmt(me.dtf * KM, 0);
+    b.noeuds = fmt(me.vitesse, 1); b.kmh = fmt(me.vitesse * KM, 1);
+    var av = rang(me.rang - 1), ar = rang(me.rang + 1);
+    if (av) {
+      var g = me.dtl - av.dtl;
+      b.ecartTexte = fmt(g, 1) + " milles";
+      b.ecartLabel = fmt(g * KM, 1) + " km pour rattraper " + av.prenom.trim().charAt(0).toUpperCase() + ". " + titre(av.nom) + ", " + av.rang + "e";
+    } else if (ar) {
+      var g2 = ar.dtl - me.dtl;
+      b.ecartTexte = fmt(g2, 1) + " milles";
+      b.ecartLabel = fmt(g2 * KM, 1) + " km d’avance sur " + ar.prenom.trim().charAt(0).toUpperCase() + ". " + titre(ar.nom);
+    }
+    b.route = Math.round((j.distance - me.dtf) / j.distance * 100);
+    var d = new Date(j.maj);
+    b.pointage = isNaN(d) ? "" : d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    b.live = true;
+    renderRhum(new Date());
+  }
+  function charger(url) { return fetch(url, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  function loadRhum() {
+    charger(URL_DIRECT).then(appliquer).catch(function () {
+      return charger(URL_RELAIS + "?t=" + Date.now()).then(appliquer);
+    }).catch(function () { renderRhum(new Date()); });
+  }
+
+  function renderRhum(now) {
+    var j = Math.round((sod(now) - new Date(2026, 10, 1)) / 86400000);
+    var b = BATEAU;
+    function set(id, t) { document.getElementById(id).textContent = t; }
+    set("rkN", b.classement); set("rkC", "en " + b.categorie);
+    set("rnL", "⛵ " + b.bateau + " · " + (j < 0 ? "départ dans " + (-j) + " j" : "jour " + (j + 1) + " de course"));
+    set("rnN", b.skipper);
+    set("s1", b.milles + " milles"); set("s1l", b.km + " km avant l’arrivée");
+    set("s2", b.noeuds + " nœuds"); set("s2l", b.kmh + " km/h au dernier pointage");
+    set("s3", b.ecartTexte); set("s3l", b.ecartLabel);
+    set("routeTxt", b.route + " % de la route" + (b.live && b.pointage ? " · pointage de " + b.pointage : " · valeurs non actualisées"));
+    document.getElementById("fill").style.width = b.route + "%";
+  }
+  loadRhum();
+  setInterval(loadRhum, 30 * 60 * 1000);
 })();
 </script>
 </body>
