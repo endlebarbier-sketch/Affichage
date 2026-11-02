@@ -252,7 +252,17 @@
   setInterval(tick, 5000);
 
   // Texte fixe de l’espace libre : écrire entre les guillemets (\n pour un retour à la ligne). Laisser vide pour pouvoir taper au clavier.
-  var TEXTE_LIBRE = "📢 Nouveaux horaires à partir de lundi\n\n🕣 Démarrage sur chantier à 8h30\n🏁 Fin sur chantier à 17h";
+  var TEXTE_LIBRE = "⚠️ EPI OBLIGATOIRES ⚠️
+
+Sur le chantier, on les porte en permanence 👷
+
+⛑️ Casque
+🥾 Chaussures de sécurité
+🧤 Gants
+🎧 Protections auditives
+🥽 Lunettes de protection
+
+🤝 Tout le monde rentre chez soi en bonne santé !";
   ["libre"].forEach(function (id) {
     var el = document.getElementById(id), k = "tv-" + id;
     try { var v = localStorage.getItem(k); if (v) el.textContent = v; } catch (e) {}
