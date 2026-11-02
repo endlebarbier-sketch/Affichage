@@ -1,0 +1,33 @@
+name: Mise à jour Route du Rhum
+
+on:
+  schedule:
+    - cron: "10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Récupérer le classement officiel
+        run: |
+          curl -fsSL -A "Mozilla/5.0" "https://www.routedurhum.com/_functions/classement?lang=fr" -o classement.json
+          jq '{maj, distance, classes: [.classes[] | {nom, partants, lignes: [.lignes[] | {id, prenom, nom, bateau, voile, rang, dtf, dtl, vitesse}]}]}' classement.json > rhum.json
+          rm classement.json
+
+      - name: Enregistrer le résultat
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add rhum.json
+          git diff --cached --quiet || (git commit -m "Mise à jour du classement" && git push)
+
+      - name: Demander la mise à jour du site
+        run: |
+          curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true
