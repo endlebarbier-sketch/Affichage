@@ -343,11 +343,14 @@
   var ID_SKIPPER = "a7a3f014-e29d-491f-bda7-d32bfbd0ef03";
   var URL_DIRECT = "https://www.routedurhum.com/_functions/classement?lang=fr";
   var URL_RELAIS = "rhum.json";
+  // MODE MANUEL : la lecture automatique est désactivée (le site de la course bloque les accès automatiques).
+  // Pour mettre à jour : modifier les valeurs ci-dessous (ou les envoyer en capture à Claude).
+  var MODE_MANUEL = true;
   var BATEAU = {
-    skipper: "Christophe Bachmann", bateau: "Grain de Sable", categorie: "Vintage Mono", classement: "6e",
-    milles: "3 269", km: "6 054", noeuds: "12,6", kmh: "23,3",
-    ecartTexte: "4,0 milles", ecartLabel: "7,4 km pour rattraper T. Pilliard, 5e",
-    route: 8, pointage: "", live: false
+    skipper: "Christophe Bachmann", bateau: "Grain de Sable", categorie: "Vintage Mono", classement: "7e",
+    milles: "3 152", km: "5 837", noeuds: "9,8", kmh: "18,1",
+    ecartTexte: "+125,2 milles", ecartLabel: "232 km derrière le premier",
+    route: 11, maj: "3/11 à 7 h", pointage: "", live: false
   };
   function titre(t) { return t.trim().toLowerCase().replace(/(^|[\s-])\S/g, function (m) { return m.toUpperCase(); }); }
   function fmt(n, d) { return n.toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }); }
@@ -376,28 +379,31 @@
     }
     b.route = Math.round((j.distance - me.dtf) / j.distance * 100);
     var d = new Date(j.maj);
-    b.pointage = isNaN(d) ? "" : d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    var hm = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    b.pointage = isNaN(d) ? "" : (d.toDateString() === new Date().toDateString() ? hm : d.toLocaleDateString("fr-FR", { day: "numeric", month: "numeric" }) + " à " + hm);
+    b.vieux = !isNaN(d) && (Date.now() - d.getTime() > 4 * 3600 * 1000);
     b.live = true;
     renderRhum(new Date());
   }
   function charger(url) { return fetch(url, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
   function loadRhum() {
+    if (MODE_MANUEL) { renderRhum(new Date()); return; }
     charger(URL_DIRECT).then(appliquer).catch(function () {
       return charger(URL_RELAIS + "?t=" + Date.now()).then(appliquer);
     }).catch(function () { renderRhum(new Date()); });
   }
 
   function renderRhum(now) {
-    var j = Math.round((sod(now) - new Date(2026, 10, 1)) / 86400000);
+    var ms = now - Date.UTC(2026, 10, 1, 12, 2), j = Math.floor(ms / 86400000);
     var b = BATEAU;
     function set(id, t) { document.getElementById(id).textContent = t; }
     set("rkN", b.classement); set("rkC", "en " + b.categorie);
-    set("rnL", "⛵ " + b.bateau + " · " + (j < 0 ? "départ dans " + (-j) + " j" : "jour " + (j + 1) + " de course"));
+    set("rnL", "⛵ " + b.bateau + " · " + (j < 0 ? "départ dans " + Math.ceil(-ms / 86400000) + " j" : "jour " + (j + 1) + " de course"));
     set("rnN", b.skipper);
     set("s1", b.milles + " milles"); set("s1l", b.km + " km avant l’arrivée");
     set("s2", b.noeuds + " nœuds"); set("s2l", b.kmh + " km/h au dernier pointage");
     set("s3", b.ecartTexte); set("s3l", b.ecartLabel);
-    set("routeTxt", b.route + " % de la route" + (b.live && b.pointage ? " · pointage de " + b.pointage : " · valeurs non actualisées"));
+    set("routeTxt", b.route + " % de la route" + (MODE_MANUEL ? " · valeurs du " + b.maj : (b.live && b.pointage ? (b.vieux ? " · ⚠ ancien pointage : " : " · pointage de ") + b.pointage : " · valeurs non actualisées")));
     document.getElementById("fill").style.width = b.route + "%";
     var n = document.getElementById("rnN");
     n.style.fontSize = "";
